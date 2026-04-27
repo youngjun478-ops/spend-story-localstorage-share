@@ -595,46 +595,4 @@ function App() {
   );
 }
 
-export default App;    <main className="min-h-screen bg-white px-5 py-6">
-      <div className="max-w-md mx-auto flex flex-col gap-5">
-
-        {step === "input" && (
-          <>
-            <h1 className="text-3xl font-bold">오늘 뭐 샀어?</h1>
-
-            <input
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="금액 입력"
-              className="border p-3 rounded"
-            />
-
-            <button
-              onClick={handleShowResult}
-              className="bg-black text-white p-4 rounded"
-            >
-              문장 보기
-            </button>
-          </>
-        )}
-
-        {step === "result" && result && (
-          <>
-            <h2 className="text-2xl font-bold">{result.title}</h2>
-            <p className="text-gray-500">{result.subtitle}</p>
-
-            <button
-              onClick={() => setStep("input")}
-              className="mt-5 bg-gray-200 p-3 rounded"
-            >
-              다시 하기
-            </button>
-          </>
-        )}
-
-      </div>
-    </main>
-  );
-}
-
 export default App;
