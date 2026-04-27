@@ -444,11 +444,9 @@ function App() {
                   </p>
 
                   <p className="mt-1 text-sm font-bold text-zinc-700">
-                    {selectedCategory.label} ·{" "}
-                    {amount
-                      ? `${Number(amount).toLocaleString("ko-KR")}원`
-                      : "금액 미입력"}{" "}
-                    · {selectedSituation.label}
+                   {selectedCategory.label} ·
+                   {amount && `${Number(amount).toLocaleString("ko-KR")}원 ·`}
+                   {selectedSituation.label}
                   </p>
                 </div>
               </div>
