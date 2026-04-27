@@ -17,24 +17,24 @@ const situations = [
 
 const lines = {
   cafe: [
-    "커피를 마신 게 아니라, 잠깐 앉아 있고 싶었다.",
-    "오늘은 메뉴보다 자리가 더 필요했다.",
-    "공부하러 간 건데, 그냥 쉬다 온 느낌이다.",
+    "커피를 마신 게 아니라,\n잠깐 앉아 있고 싶었다.",
+    "오늘은 메뉴보다\n자리가 더 필요했다.",
+    "공부하려고 간 건데,\n그냥 쉬다 나온 느낌이다.",
   ],
   food: [
-    "배고파서라기보다, 오늘이 그냥 그런 날이었다.",
-    "먹으면 괜찮아질 줄 알았는데, 크게 달라지진 않았다.",
-    "오늘의 식사는 만족보다 처리에 가까웠다.",
+    "배고파서라기보다,\n오늘이 그냥 그런 날이었다.",
+    "먹으면 괜찮아질 줄 알았는데,\n크게 달라지진 않았다.",
+    "오늘의 식사는\n만족보다 처리에 가까웠다.",
   ],
   store: [
-    "별거 아닌데, 오늘은 그게 필요했다.",
-    "필요해서 산 건 아닌데, 손이 갔다.",
-    "작은 소비였는데, 기분은 꽤 잘 드러났다.",
+    "별거 아닌데,\n오늘은 그게 필요했다.",
+    "필요해서 산 건 아닌데,\n손이 갔다.",
+    "작은 소비였는데,\n기분은 꽤 잘 드러났다.",
   ],
   shopping: [
-    "필요하진 않았는데, 갖고 싶긴 했다.",
-    "굳이였는데, 그때는 맞았다.",
-    "사는 순간엔 괜찮았는데, 지금은 조금 애매하다.",
+    "필요하진 않았는데,\n갖고 싶긴 했다.",
+    "굳이였는데,\n그때는 맞았다.",
+    "사는 순간엔 괜찮았는데,\n지금은 조금 애매하다.",
   ],
 };
 
@@ -54,7 +54,6 @@ function pickLine(category, amount, useCount) {
 
 function todayText() {
   return new Date().toLocaleDateString("ko-KR", {
-    year: "numeric",
     month: "long",
     day: "numeric",
   });
@@ -65,7 +64,7 @@ function App() {
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("cafe");
   const [situation, setSituation] = useState("habit");
-  const [card, setCard] = useState(null);
+  const [poster, setPoster] = useState(null);
   const [records, setRecords] = useState([]);
   const [useCount, setUseCount] = useState(0);
   const [reaction, setReaction] = useState(null);
@@ -83,9 +82,7 @@ function App() {
       }
     }
 
-    if (savedUseCount) {
-      setUseCount(Number(savedUseCount));
-    }
+    if (savedUseCount) setUseCount(Number(savedUseCount));
   }, []);
 
   useEffect(() => {
@@ -104,9 +101,10 @@ function App() {
     setTimeout(() => setToast(""), 1500);
   }
 
-  function createCard() {
+  function createPoster() {
     const nextUseCount = useCount + 1;
-    const newCard = {
+
+    const newPoster = {
       id: Date.now(),
       amount,
       category,
@@ -116,25 +114,30 @@ function App() {
     };
 
     setUseCount(nextUseCount);
-    setCard(newCard);
+    setPoster(newPoster);
     setReaction(null);
     setStep("result");
   }
 
-  function saveCard() {
-    if (!card) return;
-    setRecords((prev) => [{ ...card, reaction }, ...prev]);
-    showToast("소비 카드가 저장됐어요.");
+  function savePoster() {
+    if (!poster) return;
+    setRecords((prev) => [{ ...poster, reaction }, ...prev]);
+    showToast("오늘의 소비 조각을 저장했어요.");
   }
 
-  async function shareCard() {
-    if (!card) return;
+  async function sharePoster() {
+    if (!poster) return;
 
-    const amountText = card.amount
-      ? `${Number(card.amount).toLocaleString("ko-KR")}원`
-      : "금액 없음";
+    const amountText = poster.amount
+      ? `${Number(poster.amount).toLocaleString("ko-KR")}원`
+      : "";
 
-    const text = `Spend Story\n\n${getCategory(card.category).label} · ${getSituation(card.situation).label} · ${amountText}\n\n"${card.sentence}"\n\n${card.date}`;
+    const text = `오늘의 소비 조각\n\n"${poster.sentence.replace(
+      "\n",
+      " "
+    )}"\n\n${getCategory(poster.category).label}${
+      amountText ? ` · ${amountText}` : ""
+    } · ${getSituation(poster.situation).label}\n\nSpend Story`;
 
     try {
       if (navigator.share) {
@@ -150,25 +153,25 @@ function App() {
 
   function resetInput() {
     setStep("input");
-    setCard(null);
+    setPoster(null);
     setReaction(null);
   }
 
   return (
-    <main className="min-h-screen bg-[#f6f1ea] px-5 py-6 text-zinc-950">
+    <main className="min-h-screen bg-[#f4ede3] px-5 py-6 text-[#2c2118]">
       <div className="mx-auto flex w-full max-w-md flex-col gap-5">
         <header className="flex items-center justify-between">
           <button type="button" onClick={resetInput} className="text-left">
-            <p className="text-xs font-black tracking-[0.22em] text-orange-500">
+            <p className="text-xs font-bold tracking-[0.25em] text-[#b47743]">
               SPEND STORY
             </p>
-            <h1 className="mt-1 text-lg font-black">소비 카드 만들기</h1>
+            <h1 className="mt-1 text-lg font-black">오늘의 소비 조각</h1>
           </button>
 
           <button
             type="button"
             onClick={() => setStep("records")}
-            className="rounded-full bg-white px-4 py-2 text-xs font-black text-zinc-600 shadow-sm"
+            className="rounded-full bg-white/70 px-4 py-2 text-xs font-bold text-[#6f5742] shadow-sm"
           >
             저장 {records.length}
           </button>
@@ -176,23 +179,23 @@ function App() {
 
         {step === "input" && (
           <>
-            <section className="rounded-[32px] bg-white p-6 shadow-sm">
-              <p className="text-sm font-black text-orange-500">30초 기록</p>
+            <section className="rounded-[36px] bg-[#fffaf3] p-6 shadow-sm">
+              <p className="text-sm font-bold text-[#b47743]">30초 기록</p>
 
-              <h2 className="mt-2 text-3xl font-black leading-tight tracking-tight">
+              <h2 className="mt-3 text-3xl font-black leading-tight tracking-tight">
                 오늘 쓴 돈을
                 <br />
-                하나의 카드로 남겨봐.
+                작은 장면으로 남겨봐.
               </h2>
 
-              <p className="mt-4 text-sm leading-6 text-zinc-500">
-                금액, 종류, 그때 상태를 고르면 오늘의 소비가 공유 가능한
-                소비 카드로 바뀝니다.
+              <p className="mt-4 text-sm leading-6 text-[#806852]">
+                금액, 종류, 그때 상태만 고르면 오늘의 소비가 감성적인
+                포스터처럼 정리됩니다.
               </p>
 
-              <div className="mt-6 flex flex-col gap-5">
+              <div className="mt-7 flex flex-col gap-5">
                 <label className="flex flex-col gap-2">
-                  <span className="text-sm font-black text-zinc-700">금액</span>
+                  <span className="text-sm font-bold">금액</span>
                   <input
                     value={amount}
                     onChange={(e) =>
@@ -200,24 +203,22 @@ function App() {
                     }
                     inputMode="numeric"
                     placeholder="예: 5500"
-                    className="h-14 rounded-2xl border border-zinc-200 bg-zinc-50 px-4 text-lg font-black outline-none focus:border-zinc-950 focus:bg-white"
+                    className="h-14 rounded-2xl border border-[#ead8c4] bg-white/70 px-4 text-lg font-black outline-none focus:border-[#b47743]"
                   />
                 </label>
 
                 <div>
-                  <p className="mb-2 text-sm font-black text-zinc-700">
-                    무엇에 썼어?
-                  </p>
+                  <p className="mb-2 text-sm font-bold">무엇에 썼어?</p>
                   <div className="grid grid-cols-2 gap-2">
                     {categories.map((item) => (
                       <button
                         key={item.value}
                         type="button"
                         onClick={() => setCategory(item.value)}
-                        className={`rounded-2xl border px-4 py-3 text-left ${
+                        className={`rounded-2xl border px-4 py-3 text-left transition ${
                           category === item.value
-                            ? "border-zinc-950 bg-zinc-950 text-white"
-                            : "border-zinc-200 bg-white text-zinc-700"
+                            ? "border-[#2c2118] bg-[#2c2118] text-white"
+                            : "border-[#ead8c4] bg-white/70 text-[#4d3b2c]"
                         }`}
                       >
                         <span className="mr-2">{item.icon}</span>
@@ -228,19 +229,17 @@ function App() {
                 </div>
 
                 <div>
-                  <p className="mb-2 text-sm font-black text-zinc-700">
-                    그때 상태는?
-                  </p>
+                  <p className="mb-2 text-sm font-bold">그때 상태는?</p>
                   <div className="flex flex-wrap gap-2">
                     {situations.map((item) => (
                       <button
                         key={item.value}
                         type="button"
                         onClick={() => setSituation(item.value)}
-                        className={`rounded-full border px-4 py-2 text-sm font-black ${
+                        className={`rounded-full border px-4 py-2 text-sm font-black transition ${
                           situation === item.value
-                            ? "border-orange-500 bg-orange-500 text-white"
-                            : "border-zinc-200 bg-white text-zinc-700"
+                            ? "border-[#b47743] bg-[#b47743] text-white"
+                            : "border-[#ead8c4] bg-white/70 text-[#4d3b2c]"
                         }`}
                       >
                         {item.label}
@@ -251,88 +250,80 @@ function App() {
 
                 <button
                   type="button"
-                  onClick={createCard}
-                  className="h-14 rounded-2xl bg-zinc-950 text-base font-black text-white shadow-lg"
+                  onClick={createPoster}
+                  className="h-14 rounded-2xl bg-[#2c2118] text-base font-black text-white shadow-lg"
                 >
-                  소비 카드 만들기
+                  오늘의 소비 조각 만들기
                 </button>
               </div>
             </section>
 
-            <section className="rounded-[28px] bg-white p-5 shadow-sm">
-              <p className="text-sm font-black">이 앱은 가계부가 아니에요.</p>
-              <p className="mt-2 text-sm leading-6 text-zinc-500">
-                절약 점수나 분석표 대신, 오늘의 소비를 나중에 다시 볼 수
-                있는 하나의 기록물로 바꿉니다.
+            <section className="rounded-[30px] bg-white/60 p-5">
+              <p className="text-sm font-black">가계부처럼 평가하지 않아요.</p>
+              <p className="mt-2 text-sm leading-6 text-[#806852]">
+                오늘 쓴 돈을 숫자가 아니라, 나중에 다시 볼 수 있는 작은
+                장면으로 남깁니다.
               </p>
             </section>
           </>
         )}
 
-        {step === "result" && card && (
+        {step === "result" && poster && (
           <>
-            <section className="rounded-[36px] bg-zinc-950 p-5 text-white shadow-xl">
-              <div className="rounded-[28px] bg-white p-6 text-zinc-950">
+            <section className="rounded-[40px] bg-[#d8b894] p-4 shadow-xl">
+              <div className="min-h-[540px] rounded-[32px] bg-[#fffaf3] px-7 py-8 shadow-inner">
                 <div className="flex items-center justify-between">
-                  <p className="text-xs font-black tracking-[0.2em] text-orange-500">
-                    SPEND CARD
+                  <p className="text-xs font-bold tracking-[0.25em] text-[#b47743]">
+                    TODAY'S PIECE
                   </p>
-                  <p className="text-xs font-bold text-zinc-400">
-                    {card.date}
-                  </p>
-                </div>
-
-                <div className="mt-8 flex items-center gap-3">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-100 text-3xl">
-                    {selectedCategory.icon}
-                  </div>
-
-                  <div>
-                    <p className="text-sm font-bold text-zinc-400">
-                      {selectedCategory.label} · {selectedSituation.label}
-                    </p>
-                    <p className="text-2xl font-black">
-                      {card.amount
-                        ? `${Number(card.amount).toLocaleString("ko-KR")}원`
-                        : "금액 없이 남긴 소비"}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-8 border-t border-zinc-100 pt-8">
-                  <p className="text-3xl font-black leading-tight tracking-tight">
-                    “{card.sentence}”
+                  <p className="text-xs font-bold text-[#a58a70]">
+                    {poster.date}
                   </p>
                 </div>
 
-                <div className="mt-8 rounded-2xl bg-[#f6f1ea] p-4">
-                  <p className="text-xs font-black text-zinc-400">
-                    오늘의 소비 기록
+                <div className="mt-20">
+                  <p className="text-sm font-bold text-[#b47743]">
+                    {selectedCategory.icon} {selectedCategory.label}
                   </p>
-                  <p className="mt-1 text-sm font-bold text-zinc-600">
+
+                  <h2 className="mt-5 whitespace-pre-line text-[34px] font-black leading-[1.25] tracking-tight text-[#2c2118]">
+                    “{poster.sentence}”
+                  </h2>
+                </div>
+
+                <div className="mt-16 h-px w-full bg-[#ead8c4]" />
+
+                <div className="mt-6 flex flex-wrap gap-2 text-sm font-bold text-[#806852]">
+                  {poster.amount && (
+                    <span className="rounded-full bg-[#f1e2d0] px-3 py-2">
+                      {Number(poster.amount).toLocaleString("ko-KR")}원
+                    </span>
+                  )}
+                  <span className="rounded-full bg-[#f1e2d0] px-3 py-2">
+                    {selectedSituation.label}
+                  </span>
+                  <span className="rounded-full bg-[#f1e2d0] px-3 py-2">
                     {selectedCategory.label}
-                    {card.amount &&
-                      ` · ${Number(card.amount).toLocaleString("ko-KR")}원`}
-                    {` · ${selectedSituation.label}`}
-                  </p>
+                  </span>
                 </div>
-              </div>
 
-              <p className="mt-4 text-center text-xs font-bold text-zinc-400">
-                저장하거나 공유해서 오늘의 소비를 남겨보세요.
-              </p>
+                <p className="mt-12 text-xs font-bold tracking-[0.18em] text-[#c2a282]">
+                  SPEND STORY
+                </p>
+              </div>
             </section>
 
-            <section className="rounded-[28px] bg-white p-5 shadow-sm">
-              <p className="font-black">이 카드, 남기고 싶어?</p>
+            <section className="rounded-[28px] bg-white/70 p-5 shadow-sm">
+              <p className="font-black">이 조각, 남기고 싶어?</p>
+
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <button
                   type="button"
                   onClick={() => setReaction("saveable")}
                   className={`h-12 rounded-2xl border font-black ${
                     reaction === "saveable"
-                      ? "border-zinc-950 bg-zinc-950 text-white"
-                      : "border-zinc-200 bg-white text-zinc-700"
+                      ? "border-[#2c2118] bg-[#2c2118] text-white"
+                      : "border-[#ead8c4] bg-white text-[#4d3b2c]"
                   }`}
                 >
                   남기고 싶음
@@ -343,8 +334,8 @@ function App() {
                   onClick={() => setReaction("notyet")}
                   className={`h-12 rounded-2xl border font-black ${
                     reaction === "notyet"
-                      ? "border-zinc-950 bg-zinc-950 text-white"
-                      : "border-zinc-200 bg-white text-zinc-700"
+                      ? "border-[#2c2118] bg-[#2c2118] text-white"
+                      : "border-[#ead8c4] bg-white text-[#4d3b2c]"
                   }`}
                 >
                   아직 애매함
@@ -356,23 +347,23 @@ function App() {
               <button
                 type="button"
                 onClick={resetInput}
-                className="h-12 rounded-2xl bg-white font-black text-zinc-700 shadow-sm"
+                className="h-12 rounded-2xl bg-white/80 font-black text-[#4d3b2c] shadow-sm"
               >
                 다시
               </button>
 
               <button
                 type="button"
-                onClick={saveCard}
-                className="h-12 rounded-2xl bg-zinc-950 font-black text-white shadow-sm"
+                onClick={savePoster}
+                className="h-12 rounded-2xl bg-[#2c2118] font-black text-white shadow-sm"
               >
                 저장
               </button>
 
               <button
                 type="button"
-                onClick={shareCard}
-                className="h-12 rounded-2xl bg-orange-500 font-black text-white shadow-sm"
+                onClick={sharePoster}
+                className="h-12 rounded-2xl bg-[#b47743] font-black text-white shadow-sm"
               >
                 공유
               </button>
@@ -381,27 +372,27 @@ function App() {
         )}
 
         {step === "records" && (
-          <section className="rounded-[32px] bg-white p-5 shadow-sm">
+          <section className="rounded-[36px] bg-[#fffaf3] p-5 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-black tracking-[0.2em] text-orange-500">
+                <p className="text-xs font-bold tracking-[0.22em] text-[#b47743]">
                   ARCHIVE
                 </p>
-                <h2 className="mt-1 text-2xl font-black">저장한 카드</h2>
+                <h2 className="mt-1 text-2xl font-black">저장한 조각</h2>
               </div>
 
               <button
                 type="button"
                 onClick={resetInput}
-                className="rounded-full bg-zinc-100 px-4 py-2 text-sm font-black text-zinc-700"
+                className="rounded-full bg-[#f1e2d0] px-4 py-2 text-sm font-black text-[#4d3b2c]"
               >
                 돌아가기
               </button>
             </div>
 
             {records.length === 0 ? (
-              <p className="mt-6 text-sm text-zinc-500">
-                아직 저장한 카드가 없습니다.
+              <p className="mt-6 text-sm text-[#806852]">
+                아직 저장한 조각이 없습니다.
               </p>
             ) : (
               <div className="mt-6 flex flex-col gap-3">
@@ -412,15 +403,15 @@ function App() {
                   return (
                     <article
                       key={item.id}
-                      className="rounded-2xl bg-zinc-50 p-4"
+                      className="rounded-3xl bg-white/70 p-4"
                     >
-                      <p className="text-xs font-black text-orange-500">
+                      <p className="text-xs font-bold text-[#b47743]">
                         {item.date}
                       </p>
-                      <p className="mt-2 text-lg font-black leading-6">
+                      <p className="mt-3 whitespace-pre-line text-xl font-black leading-7">
                         “{item.sentence}”
                       </p>
-                      <p className="mt-3 text-xs font-bold text-zinc-400">
+                      <p className="mt-4 text-xs font-bold text-[#806852]">
                         {itemCategory.icon} {itemCategory.label}
                         {item.amount &&
                           ` · ${Number(item.amount).toLocaleString(
@@ -437,7 +428,7 @@ function App() {
         )}
 
         {toast && (
-          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 rounded-full bg-zinc-950 px-5 py-3 text-sm font-black text-white shadow-lg">
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 rounded-full bg-[#2c2118] px-5 py-3 text-sm font-black text-white shadow-lg">
             {toast}
           </div>
         )}
